@@ -1,0 +1,270 @@
+body {
+    background-color: #000;
+    color: #00F; /* Blue text */
+    font-family: 'Cascadia Code', 'Consolas', 'Monaco', monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    overflow: hidden; /* Prevent scrollbars */
+}
+
+/* Login Container Styles */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    background-color: #000;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+.terminal-login {
+    width: 80%;
+    max-width: 500px;
+    border: 2px solid #00F;
+    padding: 30px;
+    box-shadow: 0 0 15px #00F;
+    background-color: rgba(0, 0, 50, 0.1);
+    box-sizing: border-box;
+    color: #00F;
+    font-family: 'Cascadia Code', 'Consolas', 'Monaco', monospace;
+    text-align: center;
+}
+
+.terminal-login p {
+    margin-bottom: 20px;
+    font-size: 1.1em;
+}
+
+.terminal-login label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 1em;
+}
+
+.terminal-login input[type="password"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid #00F;
+    color: #00F;
+    font-family: 'Cascadia Code', 'Consolas', 'Monaco', monospace;
+    font-size: 1em;
+    text-align: center;
+}
+
+.terminal-login input[type="password"]:focus {
+    outline: none;
+    box-shadow: 0 0 8px #00F;
+}
+
+.terminal-login button {
+    background-color: #00F;
+    color: #000;
+    border: 1px solid #00F;
+    padding: 10px 20px;
+    font-family: 'Cascadia Code', 'Consolas', 'Monaco', monospace;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, transform 0.2s;
+}
+
+.terminal-login button:hover {
+    background-color: #000;
+    color: #00F;
+    transform: scale(1.05);
+}
+
+.error-message {
+    color: #F00; /* Red for error messages */
+    margin-top: 15px;
+    font-size: 0.9em;
+}
+
+/* Main Content (after login) */
+.main-content {
+    position: relative;
+    width: 100vw; /* Viewport width */
+    height: 100vh; /* Viewport height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+}
+
+/* Matrix Canvas Styles */
+#matrixCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 1; /* Lowest visible layer */
+}
+
+/* Animated Message Overlay (for countdown and big words) */
+.animated-message-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10; /* Highest z-index initially */
+    pointer-events: none;
+}
+
+#animatedText {
+    font-size: 8em; /* Large font size for countdown and words */
+    color: #00F; /* Blue */
+    text-shadow: 0 0 20px #00F, 0 0 30px #00F; /* Glow effect */
+    font-weight: bold;
+    opacity: 0; /* Hidden by default */
+    animation-fill-mode: forwards;
+}
+
+/* Animation for numbers (3, 2, 1) and big words */
+@keyframes textFadeInScaleOut {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+        filter: blur(10px);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+        filter: blur(0px);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.8);
+        filter: blur(5px);
+    }
+}
+
+@keyframes wordRevealFlash {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+        text-shadow: 0 0 5px #00F;
+    }
+    20% {
+        opacity: 1;
+        transform: scale(1.1);
+        text-shadow: 0 0 30px #00F, 0 0 40px #00F; /* Stronger glow */
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+        text-shadow: 0 0 20px #00F, 0 0 30px #00F; /* Standard glow */
+    }
+}
+
+
+/* Content Overlay (for final text and button) */
+.content-overlay {
+    position: relative;
+    z-index: 5;
+    padding: 20px;
+    border: 2px solid #00F;
+    box-shadow: 0 0 15px #00F;
+    background-color: rgba(0, 0, 0, 0.5);
+    text-align: center;
+    max-width: 90%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+.content-overlay pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 0 auto 20px auto;
+    font-size: 1.1em;
+    line-height: 1.4;
+    color: #00F;
+    text-align: center;
+    max-width: 100%;
+}
+
+.cursor {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    from, to {
+        background-color: transparent;
+    }
+    50% {
+        background-color: #00F;
+    }
+}
+
+/* Styles for the reveal button */
+.reveal-button {
+    background-color: #00F;
+    color: #000;
+    border: 1px solid #00F;
+    padding: 12px 25px;
+    font-family: 'Cascadia Code', 'Consolas', 'Monaco', monospace;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, transform 0.2s;
+    margin-top: 20px;
+}
+
+.reveal-button:hover {
+    background-color: #000;
+    color: #00F;
+    transform: scale(1.05);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Container untuk foto-foto yang jatuh */
+.photo-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Sembunyikan foto yang sudah jatuh */
+    pointer-events: none; /* Izinkan klik di bawahnya */
+    z-index: 2; /* Di atas kanvas, di bawah konten utama */
+}
+
+/* Gaya untuk foto yang jatuh */
+.falling-photo {
+    position: absolute;
+    width: 100px; /* Lebar foto, sesuaikan jika perlu */
+    height: auto;
+    opacity: 0.8;
+    filter: blur(1px);
+    animation: fall-down 10s linear forwards; /* Animasi jatuh */
+}
+
+@keyframes fall-down {
+    0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 0.1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}

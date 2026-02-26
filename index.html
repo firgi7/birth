@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selamat Ulang Tahun!</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* --- CSS STYLES --- */
+    body {
+        background-color: #000;
+        color: #FF1493;
+        font-family: 'Cascadia Code', 'Consolas', 'Monaco', monospace;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        overflow: hidden;
+    }
+
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        width: 100%;
+        background-color: #000;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 100;
+    }
+
+    .terminal-login {
+        width: 90%;
+        max-width: 500px;
+        border: 2px solid #FF1493;
+        padding: 30px;
+        box-shadow: 0 0 20px #FF1493;
+        background-color: rgba(50, 0, 30, 0.2);
+        box-sizing: border-box;
+        color: #FF1493;
+        text-align: center;
+    }
+
+    .terminal-login input[type="password"] {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        background-color: rgba(0, 0, 0, 0.7);
+        border: 1px solid #FF1493;
+        color: #FF1493;
+        font-family: inherit;
+        font-size: 1.1em;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    .terminal-login button {
+        background-color: #FF1493;
+        color: #000;
+        border: none;
+        padding: 12px 25px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .main-content {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #matrixCanvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+    }
+
+    .content-overlay {
+        position: relative;
+        z-index: 5;
+        padding: 30px;
+        border: 2px solid #FF1493;
+        background-color: rgba(0, 0, 0, 0.85);
+        text-align: center;
+        max-width: 85%;
+        box-shadow: 0 0 30px rgba(255, 20, 147, 0.3);
+    }
+
+    #output {
+        white-space: pre-wrap;
+        font-size: 1.1em;
+        line-height: 1.6;
+        color: #FF69B4;
+        margin-bottom: 25px;
+        text-align: left;
+    }
+
+    .reveal-button {
+        background-color: #FF1493;
+        color: #000;
+        border: none;
+        padding: 15px 30px;
+        font-size: 1.2em;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: 0.3s;
+    }
+
+    .hidden { display: none !important; }
+
+    /* --- Gift Modal & Cyber Cake --- */
+    .gift-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.98);
+        z-index: 200;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s ease;
+    }
+
+    .gift-modal.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .cake-container {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        margin-bottom: 40px;
+        cursor: pointer;
+    }
+
+    .cake {
+        width: 160px;
+        height: 100px;
+        background: #FF1493;
+        border-radius: 10px 10px 0 0;
+        position: relative;
+        box-shadow: 0 0 20px #FF1493;
+    }
+
+    .cake::before {
+        content: "";
+        position: absolute;
+        top: 20px;
+        left: 0;
+        width: 100%;
+        height: 20px;
+        background: #FF69B4;
+    }
+
+    .candle {
+        width: 10px;
+        height: 40px;
+        background: #fff;
+        position: absolute;
+        top: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 2px;
+    }
+
+    .flame {
+        width: 15px;
+        height: 25px;
+        background: #FFD700;
+        border-radius: 50% 50% 20% 20%;
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        box-shadow: 0 0 15px #FFD700;
+        animation: flicker 0.1s infinite alternate;
+    }
+
+    @keyframes flicker {
+        from { transform: translateX(-50%) scale(1); opacity: 0.8; }
+        to { transform: translateX(-50%) scale(1.1); opacity: 1; }
+    }
+
+    .flame.blown {
+        display: none;
+    }
+
+    .certificate {
+        width: 90%;
+        max-width: 500px;
+        background: #111;
+        border: 3px double #FF1493;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 0 40px #FF1493;
+        display: none;
+    }
+
+    .certificate.show {
+        display: block;
+        animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+        0% { transform: scale(0.5); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    #confettiCanvas {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 201;
+    }
+
+    .instruction {
+        color: #FFF;
+        margin-top: 10px;
+        font-size: 0.9em;
+        text-shadow: 0 0 5px #FF1493;
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 0.5; }
+        50% { opacity: 1; }
+    }
+
+    .photo-container {
+        position: absolute;
+        width: 80px;
+        height: auto;
+        opacity: 0.7;
+        border: 1px solid #FF1493;
+        animation: fall-down 10s linear forwards;
+    }
+
+    @keyframes fall-down {
+        0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
+        10% { opacity: 0.8; }
+        100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    .cursor {
+        display: inline-block;
+        width: 10px;
+        height: 1.2em;
+        background-color: #FF1493;
+        margin-left: 5px;
+        animation: blink 0.8s infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* Kontrol Musik di Pojok */
+    .music-control {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 300;
+        background: rgba(255, 20, 147, 0.2);
+        border: 1px solid #FF1493;
+        color: #FF1493;
+        padding: 10px;
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .music-control:hover { background: #FF1493; color: #000; }
+
+  </style>
+</head>
+<body>
+
+  <!-- Login Terminal -->
+  <div class="login-container" id="loginContainer">
+    <div class="terminal-login">
+      <p>Akses Dibatasi. Masukkan Kode Otentikasi:</p>
+      <input type="password" id="passwordInput" placeholder="Sandi (Tgl Lahir)..." autofocus>
+      <button id="authenticateButton">OTENTIKASI</button>
+      <p id="errorMessage" class="error-message"></p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content hidden" id="mainContent">
+    <canvas id="matrixCanvas"></canvas>
+    <div class="animated-message-overlay" id="animatedMessageOverlay">
+      <span id="animatedText" class="hidden"></span>
+    </div>
+    <div class="content-overlay hidden" id="contentOverlay">
+      <div id="output"></div>
+      <div class="photo-container" id="photoContainer"></div>
+      <button id="revealGiftButton" class="reveal-button hidden">🎁 KLIK DISINI</button>
+    </div>
+  </div>
+
+  <!-- Gift Modal -->
+  <div class="gift-modal" id="giftModal">
+      <canvas id="confettiCanvas"></canvas>
+      
+      <div id="cakeSection">
+          <div class="cake-container" id="cakeContainer">
+              <div class="candle">
+                  <div class="flame" id="candleFlame"></div>
+              </div>
+              <div class="cake"></div>
+          </div>
+          <p class="instruction">Klik kuenya untuk tiup lilin!</p>
+      </div>
+
+      <div class="certificate" id="certificateCard">
+          <h2 style="color: #FF1493; text-shadow: 0 0 10px #FF1493;">CERTIFIED </h2>
+          <span style="font-size: 4em; display: block; margin: 15px;">🏆</span>
+          <p>Sertifikat ini diberikan kepada:</p>
+          <div style="font-size: 1.4em; font-weight: bold; color: #FFF; margin: 10px 0;">Nuraisyah</div>
+          <p>Selamat karena berhasil melewati tahun tahun sebelumnya dengan sangat baik dan resmi naik level ke usia baru.</p>
+          <p style="font-size: 0.8em; color: #555;">ID: B-DAY-27022003-LVL-UP</p>
+          <button class="reveal-button" style="margin-top: 20px; font-size: 0.9em;" id="closeModal">LOGOUT</button>
+      </div>
+  </div>
+
+  <!-- Background Music Control -->
+  <div class="music-control hidden" id="musicToggle">
+    <i class="fas fa-music"></i>
+  </div>
+
+  <!-- Background Music Player -->
+  <audio id="birthdaySong" loop>
+    <!-- GANTI 'musik.mp3' DI BAWAH INI DENGAN NAMA FILE MP3 ANDA -->
+    <source src="music.mp3" type="audio/mpeg">
+   </audio>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const passwordInput = document.getElementById('passwordInput');
+        const authenticateButton = document.getElementById('authenticateButton');
+        const errorMessage = document.getElementById('errorMessage');
+        const mainContent = document.getElementById('mainContent');
+        const matrixCanvas = document.getElementById('matrixCanvas');
+        const ctxMatrix = matrixCanvas.getContext('2d');
+        const outputElement = document.getElementById('output');
+        const revealGiftButton = document.getElementById('revealGiftButton');
+        const photoContainer = document.getElementById('photoContainer');
+        const sfxBirthdaySong = document.getElementById('birthdaySong');
+        const musicToggle = document.getElementById('musicToggle');
+        
+        const giftModal = document.getElementById('giftModal');
+        const cakeContainer = document.getElementById('cakeContainer');
+        const candleFlame = document.getElementById('candleFlame');
+        const cakeSection = document.getElementById('cakeSection');
+        const certificateCard = document.getElementById('certificateCard');
+        const closeModal = document.getElementById('closeModal');
+        const confettiCanvas = document.getElementById('confettiCanvas');
+        const ctxConfetti = confettiCanvas.getContext('2d');
+
+        const CORRECT_PASSWORD = "27022003"; 
+
+        const playBeep = (freq = 440, type = 'sine', duration = 0.1) => {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.type = type;
+                oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        };
+
+        // --- Matrix Rain ---
+        let W, H, columns, drops = [];
+        const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%&*';
+        function initMatrix() {
+            W = window.innerWidth; H = window.innerHeight;
+            matrixCanvas.width = W; matrixCanvas.height = H;
+            columns = Math.floor(W / 16);
+            drops = Array(columns).fill(1).map(() => Math.random() * -100);
+        }
+        function drawMatrix() {
+            ctxMatrix.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctxMatrix.fillRect(0, 0, W, H);
+            ctxMatrix.fillStyle = "#FF1493";
+            ctxMatrix.font = "16px monospace";
+            for (let i = 0; i < drops.length; i++) {
+                ctxMatrix.fillText(characters.charAt(Math.floor(Math.random()*characters.length)), i*16, drops[i]*16);
+                if (drops[i]*16 > H && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+
+        const finalMessageLines = [
+            "DECRYPTING FINAL DATA PACKET...",
+            "SUCCESSFUL",
+            "SECRET MASSAGE:",
+            "Happy Birthday Ica! Selamat bertambah usia, semoga panjang umur sehat terus, semoga cepet dapet kerja biar bisa traktir gua, semoga gajadi beban keluarga terus wkwk, jangan lupa bagi gua secret, doa yang terbaik buat lu, jangan lupa bantu gua skripsi yaa wkwk, makasih banget udah jadi temen gua dan banyak bantu gua walau gua ngeselin, btw lu juga ngeselin sih, seneng bisa kenal sama lu, jangan bosen jadi orang baik dan bantu gua terusss sampe lulus wkwkwk. dah ah kepanjangan, sisanya lu yang doa gua yang aminin yee!!",
+            "DATA KADO SUDAH SIAP DITAMPILKAN.",
+            "KLIK TOMBOL UNTUK MELIHATNYA!"
+        ];
+        let lineIdx = 0, charIdx = 0;
+        function typeText() {
+            if (lineIdx < finalMessageLines.length) {
+                if (charIdx < finalMessageLines[lineIdx].length) {
+                    outputElement.innerHTML = finalMessageLines.slice(0, lineIdx).join('<br>') + 
+                                              (lineIdx > 0 ? '<br>' : '') + 
+                                              finalMessageLines[lineIdx].substring(0, charIdx + 1) + 
+                                              '<span class="cursor"></span>';
+                    playBeep(200, 'sawtooth', 0.01);
+                    charIdx++;
+                    setTimeout(typeText, 60);
+                } else {
+                    lineIdx++; charIdx = 0;
+                    setTimeout(typeText, 600);
+                }
+            } else { revealGiftButton.classList.remove('hidden'); }
+        }
+
+        let particles = [];
+        function createConfetti() {
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+            particles = [];
+            for(let i=0; i<100; i++) {
+                particles.push({
+                    x: Math.random() * confettiCanvas.width,
+                    y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+                    size: Math.random() * 8 + 4,
+                    color: i % 2 === 0 ? '#FF1493' : '#FF69B4',
+                    velX: Math.random() * 4 - 2,
+                    velY: Math.random() * 5 + 3,
+                    angle: Math.random() * 360
+                });
+            }
+        }
+        function animateConfetti() {
+            ctxConfetti.clearRect(0,0, confettiCanvas.width, confettiCanvas.height);
+            particles.forEach(p => {
+                p.y += p.velY;
+                p.x += p.velX;
+                p.angle += 2;
+                ctxConfetti.fillStyle = p.color;
+                ctxConfetti.save();
+                ctxConfetti.translate(p.x, p.y);
+                ctxConfetti.rotate(p.angle * Math.PI / 180);
+                ctxConfetti.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+                ctxConfetti.restore();
+            });
+            if (giftModal.classList.contains('show')) requestAnimationFrame(animateConfetti);
+        }
+
+        // Fungsi Memutar Musik
+        function startMusic() {
+            sfxBirthdaySong.volume = 0.5;
+            sfxBirthdaySong.play().then(() => {
+                musicToggle.classList.remove('hidden');
+            }).catch(e => {
+                console.log("Autoplay dicegah. Musik akan dicoba lagi saat interaksi.");
+            });
+        }
+
+        musicToggle.addEventListener('click', () => {
+            if (sfxBirthdaySong.paused) {
+                sfxBirthdaySong.play();
+                musicToggle.style.opacity = "1";
+            } else {
+                sfxBirthdaySong.pause();
+                musicToggle.style.opacity = "0.5";
+            }
+        });
+
+        authenticateButton.addEventListener('click', () => {
+            if (passwordInput.value.trim() === CORRECT_PASSWORD) {
+                startMusic(); // Coba putar musik saat login
+                playBeep(1000, 'sine', 0.3);
+                document.getElementById('loginContainer').classList.add('hidden');
+                mainContent.classList.remove('hidden');
+                initMatrix();
+                window.addEventListener('resize', initMatrix);
+                setInterval(drawMatrix, 35);
+                setTimeout(() => {
+                    document.getElementById('contentOverlay').classList.remove('hidden');
+                    typeText();
+                }, 1000);
+            } else {
+                errorMessage.textContent = "AKSES DITOLAK. SANDI SALAH.";
+                passwordInput.value = '';
+            }
+        });
+
+        revealGiftButton.addEventListener('click', () => {
+            giftModal.classList.add('show');
+            createConfetti();
+            animateConfetti();
+        });
+
+        cakeContainer.addEventListener('click', () => {
+            candleFlame.classList.add('blown');
+            playBeep(300, 'sine', 0.5);
+            setTimeout(() => {
+                cakeSection.style.display = 'none';
+                certificateCard.classList.add('show');
+                createConfetti(); 
+            }, 800);
+        });
+
+        closeModal.addEventListener('click', () => {
+            giftModal.classList.remove('show');
+        });
+    });
+  </script>
+</body>
+</html>
